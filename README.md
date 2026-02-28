@@ -61,3 +61,56 @@ go build -o translator main.go
 #   translator FILE               - Run file
 #   translator -c CODE            - Run code
 ```
+
+
+## Инструкции по использованию
+
+### Запуск кода из командной строки
+```bash
+./translator -c "var x int = 5; fmt.Println(x);"
+```
+
+### Запуск из файла
+```bash
+./translator examples/example1_simple_var.go
+```
+
+### Интерактивный режим (REPL)
+```bash
+./translator
+```
+
+В REPL-режиме доступны команды:
+- `exit` — выход из интерпретатора
+- `run FILE` — запустить файл
+
+Пример использования REPL:
+```
+> var x int = 10;
+> fmt.Println(x);
+10
+> x = x + 5;
+> fmt.Println(x);
+15
+> exit
+```
+
+## Примеры использования
+
+### Пример 1: Простое объявление и вывод
+```go
+var x int = 42;
+fmt.Println(x);
+```
+Вывод: `42`
+
+### Пример 2: Математические операции
+```go
+var a int = 10;
+var b int = 5;
+var sum int = a + b;
+fmt.Println(sum);
+```
+Вывод: `15`
+
+
