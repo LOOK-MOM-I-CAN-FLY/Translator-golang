@@ -17,6 +17,8 @@ FUNC        : 'func';
 PRINTLN     : 'fmt.Println';
 TRUE        : 'true';
 FALSE       : 'false';
+STRUCT      : 'struct';
+CLASS       : 'class';
 
 // Identifiers
 IDENTIFIER  : [a-zA-Z_][a-zA-Z0-9_]*;
