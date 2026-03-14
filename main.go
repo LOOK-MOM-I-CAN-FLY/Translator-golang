@@ -729,13 +729,7 @@ func (i *Interpreter) parsePrimary() (Value, error) {
 			case *StructInstance:
 				fieldVal, ok := v.Fields[fieldName]
 				if !ok {
-					return nil, fmt.Errorf("unknown field '%s' in struct '%s'", fieldName, v.Type())
-				}
-				val = fieldVal
-			case *ClassInstance:
-				fieldVal, ok := v.Fields[fieldName]
-				if !ok {
-					return nil, fmt.Errorf("unknown field '%s' in class '%s'", fieldName, v.Type())
+					return nil, fmt.Errorf("unknown field '%s' in %s", fieldName, v.Type())
 				}
 				val = fieldVal
 			default:
@@ -985,12 +979,7 @@ func (i *Interpreter) parseFieldAssignment() error {
 	switch v := objVal.(type) {
 	case *StructInstance:
 		if _, ok := v.Fields[fieldName]; !ok {
-			return fmt.Errorf("unknown field '%s' in struct '%s'", fieldName, v.Type())
-		}
-		v.Fields[fieldName] = val
-	case *ClassInstance:
-		if _, ok := v.Fields[fieldName]; !ok {
-			return fmt.Errorf("unknown field '%s' in class '%s'", fieldName, v.Type())
+			return fmt.Errorf("unknown field '%s' in %s", fieldName, v.Type())
 		}
 		v.Fields[fieldName] = val
 	default:
