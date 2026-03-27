@@ -40,7 +40,7 @@ cd Translator-golang
 
 ### 2. Скачать ANTLR4
 ```bash
-curl -L -o antlr-4.13.2-complete.jar https://www.antlr.org/antlr-4.13.2-complete.jar
+curl -L -o antlr-4.13.2-complete.jar https://www.antlr.org/download/antlr-4.13.2-complete.jar
 ```
 
 ### 3. Сгенерировать парсер (Go)

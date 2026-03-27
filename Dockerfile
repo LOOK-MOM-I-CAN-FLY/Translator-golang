@@ -5,7 +5,7 @@ RUN apk add --no-cache openjdk17-jre curl
 ENV ANTLR_VERSION=4.13.2
 ENV ANTLR_JAR=/usr/local/lib/antlr-${ANTLR_VERSION}-complete.jar
 
-RUN curl -L -o ${ANTLR_JAR} https://www.antlr.org/antlr-${ANTLR_VERSION}-complete.jar
+RUN curl -L --fail -o ${ANTLR_JAR} https://www.antlr.org/download/antlr-${ANTLR_VERSION}-complete.jar
 
 WORKDIR /app
 
