@@ -1,4 +1,4 @@
-struct Point {
+type Point struct {
 	x int;
 	y int;
 };
@@ -17,4 +17,3 @@ var user Person;
 user.name = "Alice";
 user.age = 30;
 fmt.Println(user.name, user.age);
-

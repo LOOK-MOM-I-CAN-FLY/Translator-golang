@@ -1,117 +1,146 @@
-# Simple Go Interpreter 
+# Simple Go Interpreter (ANTLR4)
 
-## Описание
+Интерпретатор для упрощенного подмножества Go на базе ANTLR4. Проект включает грамматику, генерацию парсера и исполняемый интерпретатор.
 
-**Simple Go Interpreter** — это интерпретатор для упрощенного подмножества языка программирования Go, разработанный с использованием ANTLR4.
+Поддерживаемые конструкции:
+- Объявление переменных `var x int = 5`
+- Короткое объявление `x := 5`
+- Типы `int`, `string`, `bool`
+- Математические операции `+`, `-`, `*`, `/`
+- Сравнения `==`, `!=`, `<`, `>`, `<=`, `>=`
+- Логические операции `&&`, `||`, `!`
+- `if-else`
+- `for` (условный и `init; cond; post`)
+- `fmt.Println()`
+- `type Name struct { ... }` (а также `class` как расширение)
 
-Интерпретатор поддерживает следующие конструкции:
-- Объявление переменных (`var x int = 5`)
-- Короткое объявление (`x := 5`)
-- Базовые типы данных: `int`, `string`, `bool`
-- Математические операции: `+`, `-`, `*`, `/`
-- Операции сравнения: `==`, `!=`, `<`, `>`, `<=`, `>=`
-- Логические операции: `&&`, `||`, `!`
-- Условные конструкции: `if-else`
-- Циклы: `for`
-- Вывод на экран: `fmt.Println()`
-- Классы, а значит и структуры: `type` ... `struct`
+Важно: в этом подмножестве **точка с запятой обязательна** после операторов/объявлений.
 
+---
 
-## Требования к установке
-
-### Системные требования
-- Go 1.21 или выше
+## Требования
+- Go 1.21+
+- Java 17+ (для генерации парсера ANTLR)
 - Git
 
-### Зависимости
-Проект использует ANTLR4 Go runtime:
+Зависимость Go:
 ```
 github.com/antlr4-go/antlr/v4 v4.13.0
 ```
 
-## Инструкции по сборке
+---
 
-### 1. Клонирование/получение проекта
+## Сборка (локально, через ANTLR4)
+
+### 1. Клонировать репозиторий
 ```bash
-cd translator
+git clone https://github.com/LOOK-MOM-I-CAN-FLY/Translator-golang.git
+cd Translator-golang
 ```
 
-### 2. Загрузка зависимостей
+### 2. Скачать ANTLR4
 ```bash
-go mod download
+curl -L -o antlr-4.13.2-complete.jar https://www.antlr.org/antlr-4.13.2-complete.jar
+```
+
+### 3. Сгенерировать парсер (Go)
+```bash
+java -jar antlr-4.13.2-complete.jar -Dlanguage=Go -visitor -no-listener -package parser -o parser SimpleLexer.g4 SimpleParser.g4
+```
+
+### 4. Подтянуть зависимости и собрать
+```bash
 go mod tidy
+go build -o translator .
 ```
 
-### 3. Компиляция (сборка)
-```bash
-go build -o translator main.go
-```
+Появится бинарник `./translator`.
 
-Исполняемый файл `translator` (или `translator.exe` на Windows) будет создан в текущем каталоге.
+---
 
-### 4. Проверка сборки
+## Использование
+
+### REPL
 ```bash
-# Вывести справку
 ./translator
-
-# Должно появиться:
-# Simple Go Interpreter
-# 
-# Usage:
-#   translator                    - Start REPL
-#   translator FILE               - Run file
-#   translator -c CODE            - Run code
 ```
+Команды внутри REPL:
+- `exit` — выход
+- `run FILE` — запустить файл
 
-
-## Инструкции по использованию
-
-### Запуск кода из командной строки
+### Запуск строки
 ```bash
 ./translator -c "var x int = 5; fmt.Println(x);"
 ```
 
-### Запуск из файла
+### Запуск файла
 ```bash
-./translator examples/example1_simple_var.go
+./translator examples/example6_factorial.go
 ```
 
-### Интерактивный режим (REPL)
+### Справка
 ```bash
-./translator
+./translator -h
 ```
 
-В REPL-режиме доступны команды:
-- `exit` — выход из интерпретатора
-- `run FILE` — запустить файл
+---
 
-Пример использования REPL:
-```
-> var x int = 10;
-> fmt.Println(x);
-10
-> x = x + 5;
-> fmt.Println(x);
-15
-> exit
-```
-
-## Примеры использования
-
-### Пример 1: Простое объявление и вывод
+## Пример кода
 ```go
-var x int = 42;
-fmt.Println(x);
+var n int = 5;
+var result int = 1;
+var i int = 1;
+for i <= n {
+	result = result * i;
+	i = i + 1;
+}
+fmt.Println("Factorial of 5 is:");
+fmt.Println(result);
 ```
-Вывод: `42`
 
-### Пример 2: Математические операции
-```go
-var a int = 10;
-var b int = 5;
-var sum int = a + b;
-fmt.Println(sum);
+Ожидаемый вывод:
 ```
-Вывод: `15`
+Factorial of 5 is:
+120
+```
 
+---
 
+## Docker
+
+### Сборка образа
+```bash
+docker build -t translator .
+```
+
+### Запуск REPL внутри контейнера
+```bash
+docker run --rm -it translator
+```
+
+### Запуск строки
+```bash
+docker run --rm translator -c "var x int = 5; fmt.Println(x);"
+```
+
+### Запуск файла
+```bash
+docker run --rm -v "$PWD/examples":/root/examples translator /root/examples/example6_factorial.go
+```
+
+Контейнер сам:
+- скачает ANTLR4,
+- сгенерирует парсер,
+- соберёт бинарник,
+- запустит `./translator`.
+
+---
+
+## Структура проекта
+- `SimpleLexer.g4`, `SimpleParser.g4` — грамматика
+- `parser/` — **генерируется** ANTLR (в репозитории не хранится)
+- `interpreter.go`, `main.go` — интерпретатор
+- `examples/` — тестовые примеры входного языка
+- `Dockerfile` — полностью рабочая сборка через Docker
+
+Если меняете грамматику — пересоздайте `parser/` (см. шаг 3).

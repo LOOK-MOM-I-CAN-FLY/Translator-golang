@@ -7,6 +7,7 @@ lexer grammar SimpleLexer;
 
 // Keywords
 VAR         : 'var';
+TYPE        : 'type';
 INT         : 'int';
 STRING      : 'string';
 BOOL        : 'bool';

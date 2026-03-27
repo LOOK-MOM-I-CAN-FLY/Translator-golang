@@ -1,14 +1,11 @@
-# ЭТО ТУПО ШАБЛОН ДАЖЕ НЕ БЛИЗКО ГОТОВЫЙ ДОКЕРФАЙЛ ДЛЯ ПРОЕКТА
-FROM golang:1.23-alpine AS builder
+FROM golang:1.21-alpine AS builder
 
-RUN apk add --no-cache openjdk11-jre curl
+RUN apk add --no-cache openjdk17-jre curl
 
 ENV ANTLR_VERSION=4.13.2
-RUN curl -LO https://www.antlr.org{ANTLR_VERSION}-complete.jar && \
-    mv antlr-${ANTLR_VERSION}-complete.jar /usr/local/lib/antlr4.jar
+ENV ANTLR_JAR=/usr/local/lib/antlr-${ANTLR_VERSION}-complete.jar
 
-ENV CLASSPATH=".:/usr/local/lib/antlr4.jar:$CLASSPATH"
-alias antlr4='java -jar /usr/local/lib/antlr4.jar'
+RUN curl -L -o ${ANTLR_JAR} https://www.antlr.org/antlr-${ANTLR_VERSION}-complete.jar
 
 WORKDIR /app
 
@@ -17,12 +14,12 @@ RUN go mod download
 
 COPY . .
 
-RUN java -jar /usr/local/lib/antlr4.jar -Dlanguage=Go -o parser MyGrammar.g4
+RUN java -jar ${ANTLR_JAR} -Dlanguage=Go -visitor -no-listener -package parser -o parser SimpleLexer.g4 SimpleParser.g4
 
-RUN CGO_ENABLED=0 GOOS=linux go build -o main .
+RUN CGO_ENABLED=0 GOOS=linux go build -o translator .
 
 FROM alpine:latest
 WORKDIR /root/
-COPY --from=builder /app/main .
+COPY --from=builder /app/translator ./translator
 
-CMD ["./main"]
+ENTRYPOINT ["./translator"]

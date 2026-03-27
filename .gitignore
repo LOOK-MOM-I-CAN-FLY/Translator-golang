@@ -1,0 +1,11 @@
+# Build artifacts
+/translator
+
+# ANTLR generated sources (generated locally or in Docker)
+/parser/
+*.interp
+*.tokens
+/.antlr/
+
+# OS
+.DS_Store

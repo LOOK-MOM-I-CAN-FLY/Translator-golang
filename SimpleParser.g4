@@ -21,7 +21,8 @@ typeDeclaration
     ;
 
 structDeclaration
-    : STRUCT IDENTIFIER LBRACE structField* RBRACE
+    : TYPE IDENTIFIER STRUCT LBRACE structField* RBRACE SEMICOLON?
+    | STRUCT IDENTIFIER LBRACE structField* RBRACE SEMICOLON?
     ;
 
 structField
@@ -29,7 +30,7 @@ structField
     ;
 
 classDeclaration
-    : CLASS IDENTIFIER LBRACE classMember* RBRACE
+    : CLASS IDENTIFIER LBRACE classMember* RBRACE SEMICOLON?
     ;
 
 classMember
@@ -59,8 +60,12 @@ statement
     ;
 
 assignment
-    : IDENTIFIER ASSIGN expression
+    : lvalue ASSIGN expression
     | IDENTIFIER DECLARE expression
+    ;
+
+lvalue
+    : IDENTIFIER (DOT IDENTIFIER)*
     ;
 
 // If-else statement
@@ -70,8 +75,13 @@ ifStatement
 
 // For loop (simple syntax)
 forStatement
-    : FOR (assignment | condition)? SEMICOLON (condition)? SEMICOLON (assignment)? block
-    | FOR condition block
+    : FOR forClause block
+    | FOR expression block
+    | FOR block
+    ;
+
+forClause
+    : init=assignment? SEMICOLON cond=expression? SEMICOLON post=assignment?
     ;
 
 condition
@@ -89,29 +99,59 @@ functionCall
     | PRINTLN LPAREN RPAREN
     ;
 
-// Expression
+// Expression with precedence
 expression
-    : primary
-    | NOT expression
-    | MINUS expression
-    | expression (STAR | DIV) expression
-    | expression (PLUS | MINUS) expression
-    | expression (EQ | NEQ | LT | GT | LE | GE) expression
-    | expression AND expression
-    | expression OR expression
+    : orExpr
+    ;
+
+orExpr
+    : andExpr (OR andExpr)*
+    ;
+
+andExpr
+    : compExpr (AND compExpr)*
+    ;
+
+compExpr
+    : addExpr (compOp addExpr)*
+    ;
+
+addExpr
+    : mulExpr (addOp mulExpr)*
+    ;
+
+mulExpr
+    : unaryExpr (mulOp unaryExpr)*
+    ;
+
+compOp
+    : EQ | NEQ | LT | GT | LE | GE
+    ;
+
+addOp
+    : PLUS | MINUS
+    ;
+
+mulOp
+    : STAR | DIV
+    ;
+
+unaryExpr
+    : (NOT | MINUS) unaryExpr
+    | primary
     ;
 
 primary
-    : primaryBase (DOT IDENTIFIER)*
+    : literal
+    | IDENTIFIER (DOT IDENTIFIER)*
+    | LPAREN expression RPAREN
     ;
 
-primaryBase
+literal
     : INT_LIT
     | STRING_LIT
-    | IDENTIFIER
     | TRUE
     | FALSE
-    | LPAREN expression RPAREN
     ;
 
 // Argument list for function calls
