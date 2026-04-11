@@ -32,12 +32,11 @@ type BoolValue bool
 func (v BoolValue) Type() string   { return "bool" }
 func (v BoolValue) String() string { return fmt.Sprintf("%v", bool(v)) }
 
-// ==== Struct/class support ====
+// ==== Struct support ====
 
 type TypeDef struct {
 	Name   string
 	Fields map[string]string
-	Kind   string // "struct" or "class"
 }
 
 type Instance struct {
@@ -192,22 +191,7 @@ func (i *Interpreter) VisitStructDeclaration(ctx *parser.StructDeclarationContex
 		fieldType := f.Type_().GetText()
 		fields[fieldName] = fieldType
 	}
-	i.types[name] = &TypeDef{Name: name, Fields: fields, Kind: "struct"}
-	return nil
-}
-
-func (i *Interpreter) VisitClassDeclaration(ctx *parser.ClassDeclarationContext) interface{} {
-	if i.err != nil {
-		return nil
-	}
-	name := ctx.IDENTIFIER().GetText()
-	fields := make(map[string]string)
-	for _, f := range ctx.AllClassMember() {
-		fieldName := f.IDENTIFIER().GetText()
-		fieldType := f.Type_().GetText()
-		fields[fieldName] = fieldType
-	}
-	i.types[name] = &TypeDef{Name: name, Fields: fields, Kind: "class"}
+	i.types[name] = &TypeDef{Name: name, Fields: fields}
 	return nil
 }
 
