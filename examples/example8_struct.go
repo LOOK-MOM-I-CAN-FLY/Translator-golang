@@ -1,12 +1,12 @@
 type Point struct {
 	x int;
 	y int;
-};
+}
 
-class Person {
-	var name string;
-	var age int;
-};
+type Person struct {
+	name string;
+	age  int;
+}
 
 var p Point;
 p.x = 10;
